@@ -22,12 +22,220 @@ body {
 h1 {
     text-align: center;
     font-size: 3rem;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
     background: linear-gradient(45deg, #f39c12, #e74c3c);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Ahoy! Search container styling for the treasure hunt */
+.search-container {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 40px;
+    border: 1px solid rgba(255,255,255,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.search-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(45deg, #17a2b8, #28a745);
+}
+
+.search-container h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    color: #17a2b8;
+    font-weight: 700;
+}
+
+.search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.search-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.search-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.search-field label {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #ffc107;
+}
+
+.search-field input,
+.search-field select {
+    padding: 12px 15px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-field input:focus,
+.search-field select:focus {
+    outline: none;
+    border-color: #17a2b8;
+    box-shadow: 0 0 15px rgba(23,162,184,0.3);
+    background: rgba(255,255,255,0.15);
+}
+
+.search-field input::placeholder {
+    color: rgba(255,255,255,0.6);
+}
+
+.search-field select option {
+    background: #2d2d2d;
+    color: #fff;
+}
+
+.search-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.search-btn,
+.clear-btn,
+.show-all-btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.search-btn {
+    background: linear-gradient(45deg, #17a2b8, #138496);
+    color: white;
+    box-shadow: 0 4px 15px rgba(23,162,184,0.3);
+}
+
+.search-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(23,162,184,0.5);
+    background: linear-gradient(45deg, #138496, #117a8b);
+}
+
+.clear-btn {
+    background: linear-gradient(45deg, #6c757d, #5a6268);
+    color: white;
+    box-shadow: 0 4px 15px rgba(108,117,125,0.3);
+}
+
+.clear-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(108,117,125,0.5);
+    background: linear-gradient(45deg, #5a6268, #495057);
+}
+
+.show-all-btn {
+    background: linear-gradient(45deg, #28a745, #218838);
+    color: white;
+    box-shadow: 0 4px 15px rgba(40,167,69,0.3);
+}
+
+.show-all-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(40,167,69,0.5);
+    background: linear-gradient(45deg, #218838, #1e7e34);
+}
+
+/* Search message styling */
+.search-message {
+    text-align: center;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.search-message.success {
+    background: rgba(40,167,69,0.2);
+    border: 1px solid rgba(40,167,69,0.4);
+    color: #28a745;
+}
+
+.search-message.error {
+    background: rgba(220,53,69,0.2);
+    border: 1px solid rgba(220,53,69,0.4);
+    color: #dc3545;
+}
+
+.search-message.info {
+    background: rgba(23,162,184,0.2);
+    border: 1px solid rgba(23,162,184,0.4);
+    color: #17a2b8;
+}
+
+.search-message.loading {
+    background: rgba(255,193,7,0.2);
+    border: 1px solid rgba(255,193,7,0.4);
+    color: #ffc107;
+}
+
+/* No results styling */
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    border: 2px dashed rgba(255,255,255,0.2);
+}
+
+.no-results-content {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.pirate-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.no-results h3 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: #e74c3c;
+}
+
+.no-results p {
+    font-size: 1.1rem;
+    color: #ccc;
+    margin-bottom: 10px;
+    line-height: 1.6;
 }
 
 .movies-grid {
@@ -161,7 +369,40 @@ h1 {
     
     h1 {
         font-size: 2.5rem;
+        margin-bottom: 20px;
+    }
+    
+    .search-container {
+        padding: 20px;
         margin-bottom: 30px;
+    }
+    
+    .search-container h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+    
+    .search-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .search-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .search-btn,
+    .clear-btn,
+    .show-all-btn {
+        width: 100%;
+        padding: 15px 20px;
+        font-size: 1.1rem;
+    }
+    
+    .search-message {
+        font-size: 1rem;
+        padding: 12px 15px;
     }
     
     .movies-grid {
@@ -175,5 +416,21 @@ h1 {
     
     .movie-card h3 {
         font-size: 1.5rem;
+    }
+    
+    .no-results {
+        padding: 40px 15px;
+    }
+    
+    .pirate-icon {
+        font-size: 3rem;
+    }
+    
+    .no-results h3 {
+        font-size: 1.8rem;
+    }
+    
+    .no-results p {
+        font-size: 1rem;
     }
 }
