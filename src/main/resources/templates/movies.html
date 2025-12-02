@@ -3,13 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free Movies This Month</title>
+    <title>Free Movies This Month - Treasure Hunt</title>
     <link rel="stylesheet" th:href="@{/css/movies.css}">
 </head>
 <body>
     <div class="container">
-        <h1>Free Movies This Month</h1>
-        <div class="movies-grid">
+        <h1>🏴‍☠️ Cinematic Treasure Hunt 🏴‍☠️</h1>
+        
+        <!-- Ahoy! Search form for finding movie treasures -->
+        <div class="search-container">
+            <h2>⚓ Chart Yer Course, Matey! ⚓</h2>
+            <form id="treasureHuntForm" class="search-form">
+                <div class="search-row">
+                    <div class="search-field">
+                        <label for="movieName">🎬 Movie Name:</label>
+                        <input type="text" id="movieName" name="name" placeholder="Enter treasure name..." />
+                    </div>
+                    <div class="search-field">
+                        <label for="movieId">🗝️ Treasure ID:</label>
+                        <input type="number" id="movieId" name="id" placeholder="Enter ID..." min="1" />
+                    </div>
+                    <div class="search-field">
+                        <label for="movieGenre">🎭 Adventure Type:</label>
+                        <select id="movieGenre" name="genre">
+                            <option value="">All Adventures</option>
+                            <option th:each="genre : ${genres}" th:value="${genre}" th:text="${genre}">Genre</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="search-actions">
+                    <button type="submit" class="search-btn">🔍 Start Treasure Hunt!</button>
+                    <button type="button" id="clearSearch" class="clear-btn">🧹 Clear Course</button>
+                    <button type="button" id="showAllTreasures" class="show-all-btn">🗺️ Show All Treasures</button>
+                </div>
+            </form>
+            
+            <!-- Search results message -->
+            <div id="searchMessage" class="search-message" style="display: none;"></div>
+        </div>
+        
+        <div class="movies-grid" id="moviesGrid">
             <div class="movie-card" th:each="movie : ${movies}">
                 <div class="movie-icon" th:text="${movie.icon}">🎬</div>
                 <h3 th:text="${movie.movieName}">Movie Title</h3>
@@ -29,6 +62,152 @@
                 <a th:href="@{/movies/{id}/details(id=${movie.id})}" class="details-btn">View Details</a>
             </div>
         </div>
+        
+        <!-- No results message -->
+        <div id="noResults" class="no-results" style="display: none;">
+            <div class="no-results-content">
+                <div class="pirate-icon">🏴‍☠️</div>
+                <h3>Shiver Me Timbers!</h3>
+                <p>No treasures found matching yer search criteria, matey!</p>
+                <p>Try adjusting yer course and search again.</p>
+            </div>
+        </div>
     </div>
+
+    <script>
+        // Ahoy! JavaScript for the treasure hunt functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('treasureHuntForm');
+            const clearBtn = document.getElementById('clearSearch');
+            const showAllBtn = document.getElementById('showAllTreasures');
+            const moviesGrid = document.getElementById('moviesGrid');
+            const searchMessage = document.getElementById('searchMessage');
+            const noResults = document.getElementById('noResults');
+            
+            // Store original movies for "show all" functionality
+            const originalMoviesHtml = moviesGrid.innerHTML;
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                performTreasureHunt();
+            });
+            
+            clearBtn.addEventListener('click', function() {
+                form.reset();
+                hideMessages();
+            });
+            
+            showAllBtn.addEventListener('click', function() {
+                form.reset();
+                showAllTreasures();
+            });
+            
+            function performTreasureHunt() {
+                const formData = new FormData(form);
+                const params = new URLSearchParams();
+                
+                // Build search parameters
+                if (formData.get('name')) params.append('name', formData.get('name'));
+                if (formData.get('id')) params.append('id', formData.get('id'));
+                if (formData.get('genre')) params.append('genre', formData.get('genre'));
+                
+                // Show loading message
+                showMessage('🔍 Searching for treasures...', 'loading');
+                
+                fetch('/movies/search?' + params.toString())
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            displaySearchResults(data.movies, data.message);
+                        } else {
+                            showMessage(data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Arrr! Search failed:', error);
+                        showMessage('Blimey! Something went wrong during the treasure hunt. Try again later, matey!', 'error');
+                    });
+            }
+            
+            function displaySearchResults(movies, message) {
+                if (movies.length === 0) {
+                    moviesGrid.style.display = 'none';
+                    noResults.style.display = 'block';
+                    showMessage(message, 'info');
+                } else {
+                    noResults.style.display = 'none';
+                    moviesGrid.style.display = 'grid';
+                    renderMovies(movies);
+                    showMessage(message, 'success');
+                }
+            }
+            
+            function renderMovies(movies) {
+                moviesGrid.innerHTML = movies.map(movie => `
+                    <div class="movie-card">
+                        <div class="movie-icon">${getMovieIcon(movie.movieName)}</div>
+                        <h3>${movie.movieName}</h3>
+                        <div class="movie-details">
+                            <p class="director">Director: <span>${movie.director}</span></p>
+                            <p class="year">Year: <span>${movie.year}</span></p>
+                            <p class="genre">Genre: <span>${movie.genre}</span></p>
+                            <p class="duration">Duration: <span>${movie.duration}</span> minutes</p>
+                        </div>
+                        <div class="rating">
+                            <span class="stars">${generateStars(movie.imdbRating)}</span>
+                            <span class="rating-score">${movie.imdbRating.toFixed(1)}/5</span>
+                        </div>
+                        <a href="/movies/${movie.id}/details" class="details-btn">View Details</a>
+                    </div>
+                `).join('');
+            }
+            
+            function showAllTreasures() {
+                moviesGrid.innerHTML = originalMoviesHtml;
+                moviesGrid.style.display = 'grid';
+                noResults.style.display = 'none';
+                showMessage('🗺️ Showing all treasures in our collection, me hearty!', 'success');
+            }
+            
+            function showMessage(message, type) {
+                searchMessage.textContent = message;
+                searchMessage.className = `search-message ${type}`;
+                searchMessage.style.display = 'block';
+                
+                // Auto-hide loading messages
+                if (type === 'loading') {
+                    setTimeout(() => {
+                        if (searchMessage.classList.contains('loading')) {
+                            hideMessages();
+                        }
+                    }, 5000);
+                }
+            }
+            
+            function hideMessages() {
+                searchMessage.style.display = 'none';
+            }
+            
+            function getMovieIcon(movieName) {
+                // Simple icon mapping - in real app this would use the MovieIconUtils
+                const icons = ['🎬', '🎭', '🎪', '🎨', '🎯', '🎲', '🎸', '🎺', '🎻', '🎹'];
+                return icons[movieName.length % icons.length];
+            }
+            
+            function generateStars(rating) {
+                let stars = '';
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= rating) {
+                        stars += '★';
+                    } else if (i - 0.5 === rating) {
+                        stars += '⭐';
+                    } else {
+                        stars += '☆';
+                    }
+                }
+                return stars;
+            }
+        });
+    </script>
 </body>
 </html>
